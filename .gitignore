@@ -1,0 +1,145 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Compressed Files #
+*.7z
+*.jar
+*.rar
+*.zip
+*.gz
+*.gzip
+*.tgz
+*.bzip
+*.bzip2
+*.bz2
+*.xz
+*.lzma
+*.cab
+*.xar
+
+# Packing-only formats #
+*.iso
+*.tar
+
+# Package management formats #
+*.dmg
+*.xpi
+*.gem
+*.egg
+*.deb
+*.rpm
+*.msi
+*.msix
+*.msm
+*.msp
+*.txz
+
+#===================== Operating System Generated Files ======================#
+*~
+
+# Temporary files created if a process is still accessing a deleted file #
+.fuse_hidden*
+.nfs*
+
+# KDE directory preferences #
+.directory
+
+# Linux trash folder which might appear on any partition or disk #
+.Trash-*
+
+# General #
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+
+# Thumbnails #
+._*
+
+# Files that might appear in the root of a volume #
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share #
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows thumbnail cache files #
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+# Dump file #
+*.stackdump
+
+# Folder config file #
+[Dd]esktop.ini
+
+# Recycle Bin used on file shares #
+$RECYCLE.BIN/
+
+# Windows shortcuts #
+*.lnk
+
+# .vscode #
+.vscode/
+
+# Local History for Visual Studio Code #
+.history/
+
+# Class Files #
+*.class
+
+# Dynamic Libraries #
+*.so
+*.dylib
+*.dll
+
+# Executables #
+*.com
+*.exe
+*.out
+*.app
+
+# Object Files #
+*.slo
+*.lo
+*.o
+*.obj
+
+# Logs #
+*.log
+#===================== Project Specific Files ======================#
+
+# Environment variables #
+.env
+
+# Dependencies #
+node_modules
+
+.eslintcache
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

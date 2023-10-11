@@ -1,0 +1,13 @@
+{
+  "name": "paws_on_life_backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon ."
+  },
+  "keywords": [],
+  "private": true,
+  "contributors": ["ianpmaher","sicao1","valquaint"],
+  "license": "ISC"
+}
