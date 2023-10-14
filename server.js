@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const router = require('./Controllers/router');
 const app = express();

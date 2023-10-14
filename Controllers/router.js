@@ -9,13 +9,12 @@ const router = Router();
 
 router.use(urlencoded({extended: true}));
 // router.use(methodOverride("_method"))
-
-router.get("/login", auth.login);
-router.get("/logout", auth.logout);
+router.use(auth.router);
 
 router.get("/", auth.isAuthorized, (req,res) => {
+    console.log(`Testing auth in / -- status: ${req.validated}`)
     res.send("Well hello there");
-})
+});
 
 
 module.exports = router;
