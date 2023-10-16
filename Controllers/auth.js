@@ -1,8 +1,15 @@
 const jwt = require('jsonwebtoken');
 const Router = require('express').Router;
 const urlencoded = require('express').urlencoded;
+
+const jsonencoded = require('express').json;
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
+
+const corsOpts = {
+    origin:["http://localhost:3000","https://pawson.life"],
+}
 
 
 /* TODO: MOVE TO MONGO CLASS LATER */
@@ -60,7 +67,10 @@ async function insertMany(collection, data) {
 })();
 
 const router = Router();
+router.use(urlencoded({extended:true}));
+router.use(jsonencoded());
 
+router.use(cors(corsOpts));
 function isAuthorized(req, res, next) {
     // TODO: Add logic to determine if user is authorized
     const token = req.body.userToken || req.query.userToken || req.headers["x-access-token"];
@@ -93,10 +103,12 @@ router.post("/login", async (req, res) => {
      -   On failure, return false or redirect.
      -   On success, return true
     */
-
-     const {email, password} = req.query;
+    console.log("Login has been hit.");
+     const {email, password} = req.body;
 
      if( !(email && password)){
+        console.log("Fail: missing fields");
+        console.log(req.body)
         return res.status(400).send("Both fields are required");
      }
 
@@ -110,9 +122,10 @@ router.post("/login", async (req, res) => {
         );
 
         result.token = token;
-
+        console.log("Login pass.");
         return res.status(200).json(result);
      }
+     console.log("Fail: Invalid login.");
      return res.status(400).send("Invalid username/password combination.");
 });
 
