@@ -108,10 +108,8 @@ router.post("/login", async (req, res) => {
 
      if( !(email && password)){
         console.log("Fail: missing fields");
-        console.log(req.body)
         return res.status(400).send("Both fields are required");
      }
-
      const result = await users.findOne({ email:email.toLowerCase()});
 
      if( result && (await bcrypt.compare(password, result.password))){
