@@ -8,7 +8,7 @@ const auth = require('./auth');
 const router = Router();
 
 router.use(urlencoded({extended: true}));
-// router.use(methodOverride("_method"))
+auth.init();
 router.use(auth.router);
 
 router.get("/", auth.isAuthorized, (req,res) => {
