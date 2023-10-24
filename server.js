@@ -5,4 +5,8 @@ const app = express();
 
 app.use(router)
 
-app.listen(4013, () => console.log("Server live at http://localhost:4013"));
+app.listen(4013, async () => {
+    console.log("Initializing mongo")
+    await require('./Controllers/mongo').init();
+    console.log("Server live at http://localhost:4013");
+});

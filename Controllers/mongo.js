@@ -10,20 +10,21 @@ const userSchema = new mongoose.Schema({
     validator: String,
     defaultZip: Number,
 })
-let users = null;
+let users;
 
-const trailSchema = new mongoose.Schema({
-    location: String,
-    hash: String,
-    rating: Number,
-    friendliness: Number,
-    isCatFriendly: Boolean,
-    isDogFriendly: Boolean,
-    trailLength: Number,
-    trailGeo: String,
-    lastUpdate: Date
-})
-let trails = null;
+const trailSchema = new mongoose.Schema(
+    {
+      dogsAllowed: { type: Boolean },
+      hikedThisTrail: { type: Boolean },
+      rating: { type: Number },
+      difficulty: { type: String }, // dropdown option limit it to easy, moderate, hard
+      length: { type: Number },
+      restroomsAvailable: { type: Boolean },
+      waterFountain: { type: Boolean },
+      lastUpdated: { type: Date },
+    },
+    { timestamps: true }
+  );
 
 
 async function init() {
@@ -31,13 +32,23 @@ async function init() {
     if (!process.env.MongoURI) {
         throw new Error("You must provide a MongoURI in your environment configuration in order to use this application.\
     \n\nPlease set MongoURI in your environment configuration and restart this application.");
-}
+    }
     await mongoose.connect(process.env.MongoURI)
         .then(() => {
             console.log('The connection with mongod is established')
+            users = mongoose.model(process.env.AuthDB || 'auth', userSchema);
+            trails = mongoose.model(process.env.TrailsDB || 'trails', trailSchema);
+            console.log(users, trails);
         })
-    users = mongoose.model(process.env.AuthDB || 'auth', userSchema);
-    trails = mongoose.model(process.env.TrailsDB || 'trails', trailSchema);
+
+}
+
+function getUsers(){
+    return users;
+}
+
+function getTrails(){
+    return trails;
 }
 
 // Error / success
@@ -62,7 +73,8 @@ async function insertMany(collection, data) {
 
 module.exports = {
     init,
-    users,
+    getUsers,
+    getTrails,
     dropCollection,
     insertMany
 }
