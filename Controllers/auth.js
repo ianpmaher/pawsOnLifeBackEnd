@@ -1,15 +1,16 @@
 const jwt = require('jsonwebtoken');
 const Router = require('express').Router;
 const urlencoded = require('express').urlencoded;
-const nodemailer = require('nodemailer');
 const jsonencoded = require('express').json;
-const mongoose = require('mongoose');
+const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
-const cors = require('cors');
+const mongo = require('./mongo.js');
 
+const cors = require('cors');
 const corsOpts = {
     origin:process.env.CORSAllowedDomains.split(","),
 }
+
 const transporter = nodemailer.createTransport({
     host: process.env.VerificationEmailHost,
     port: process.env.VerificationEmailPort,
@@ -20,61 +21,12 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-/* TODO: MOVE TO MONGO CLASS LATER */
-const db = mongoose.connection;
-let users = null;
-const schema = new mongoose.Schema({
-    username: String,
-    email: String,
-    password: { type: String, unique: true },
-    token: String,
-    verified: Boolean,
-    validator: String
-})
-async function init(URI) {
-    await mongoose.connect(URI)
-        .then(() => {
-            console.log('The connection with mongod is established')
-        })
-    users = mongoose.model(process.env.AuthDB || 'auth', schema);
-}
-
-// Error / success
-db.on('error', (err) => console.log(err.message + ' is Mongod not running?'))
-db.on('connected', () => console.log('mongo connected'))
-db.on('disconnected', () => console.log('mongo disconnected'))
-
-async function dropCollection(collection) {
-    console.log("Dropping collection::: ", collection);
-    return await db.dropCollection(collection)
-}
-
-async function createCollection(collection) {
-    const result = await db.createCollection(collection);
-    console.log("Creating new collection::: ", collection);
-    return result;
-}
-
-async function insertMany(collection, data) {
-    return await db.collection(collection).insertMany(data);
-}
-
-/* END MOVE */
-
-
-(async () => {
+async function init(){
     if (!process.env.JWT_KEY) {
-        throw new Error("You must provide a JWT key in your environment configuration in order to use this application.\
-    \n\nPlease set JWT_KEY in your environment configuration and restart this application.");
-    } else {
-        if (!process.env.MongoURI) {
-            throw new Error("You must provide a Mongo URI in your environment configuration in order to use this application.\
-            \n\nPlease set MongoURI in your environment configuration and restart this application.");
-            
-        }
-        await init(process.env.MongoURI);
+            throw new Error("You must provide a JWT key in your environment configuration in order to use this application.\
+        \n\nPlease set JWT_KEY in your environment configuration and restart this application.");
     }
-})();
+}
 
 const router = Router();
 router.use(urlencoded({extended:true}));
@@ -117,7 +69,7 @@ router.post("/login", async (req, res) => {
      if( !(email && password)){
         return res.status(400).send("Both fields are required");
      }
-     const result = await users.findOne({ email:email.toLowerCase()});
+     const result = await mongo.getUsers().findOne({ email:email.toLowerCase()});
 
      if( result && result.verified && (await bcrypt.compare(password, result.password))){
         const token = jwt.sign(
@@ -138,7 +90,7 @@ router.post("/logout", async (req, res) => {
    const token = req.headers["x-access-token"] || null;
 
    if(token) {
-        const result = await users.findOne({ email:email.toLowerCase()});
+        const result = await mongo.getUsers().findOne({ email:email.toLowerCase()});
 
         if(result) {
             result.token = "";
@@ -155,14 +107,15 @@ router.post("/register", async (req, res) => {
     if(!(username && email && password)) {
         return res.status(400).send("Missing all required input fields.");
     }
-     let find = (await users.findOne({ email: email.toLowerCase() }, { _id: 0 }));
+    console.log(mongo.getUsers());
+     let find = (await mongo.getUsers().findOne({ email: email.toLowerCase() }, { _id: 0 }));
      if(find){ 
         console.log("User exists in database");
         return res.status(409).send("A user exists with that email. Please register with a different email address");
      }else{
         console.log("Email provided is unique. Creating user.");
         const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await users.create({
+        const result = await mongo.getUsers().create({
             username: username,
             email: email.toLowerCase(),
             password: hashedPassword,
@@ -187,7 +140,7 @@ router.post("/register", async (req, res) => {
 });
 
 router.get("/confirmRegister", async (req, res) => {
-     const result = await users.findOne({ _id:req.query.id});
+     const result = await mongo.getUsers().findOne({ _id:req.query.id});
      console.log(result);
      if( result && (req.query.validation === result.validator) && await bcrypt.compare(result._id.toString(),req.query.validation)){
         result.verified = true;
@@ -202,5 +155,6 @@ router.get("/confirmRegister", async (req, res) => {
 
 module.exports = {
     isAuthorized,
-    router
+    router,
+    init
 };
