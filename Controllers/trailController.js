@@ -55,5 +55,33 @@ router.put("/trails/:id", async (req, res) => {
 router.delete("/trails:username", async (req, res) => {});
 
 // create new dog profile
+// router.post("/dogwater", async (req, res) => {
+//   try {
+//     const newDog = await mongo.getUsers().create({
+//       name: String(req.body.name),
+//       breed: String(req.body.breed), //dropdown option
+//       weight: Number(req.body.weight),
+//       age: Number(req.body.age),
+//       hikedThisTrail: Boolean(req.body.hikedThisTrail),
+//     });
+//     res.json(newDog);
+//   } catch (error) {
+//     res.status(400).json(error);
+//   }
+// });
+
+// edit dog inforamtion
+// router.put("/dogwater/:username", async (req, res) => {
+//   try {
+//     const editDog = await mongo
+//       .getUsers()
+//       .findOneAndUpdate({ username: req.params.username }, req.body, {
+//         new: true,
+//       });
+//     res.json(editDog);
+//   } catch (error) {
+//     res.status(400).json(error);
+//   }
+// });
 
 module.exports = router;
