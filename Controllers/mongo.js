@@ -14,18 +14,20 @@ let users;
 
 const trailSchema = new mongoose.Schema(
     {
-      dogsAllowed: { type: Boolean },
-      hikedThisTrail: { type: Boolean },
-      rating: { type: Number },
-      difficulty: { type: String }, // dropdown option limit it to easy, moderate, hard
-      length: { type: Number },
-      restroomsAvailable: { type: Boolean },
-      waterFountain: { type: Boolean },
-      lastUpdated: { type: Date },
+        dogsAllowed: Boolean,
+        hikedThisTrail: Boolean,
+        rating: Number,
+        difficulty: String, // dropdown option limit it to easy, moderate, hard
+        length: Number,
+        restroomsAvailable: Boolean,
+        waterFountain: Boolean,
+        lastUpdated: Date,
+        placesID: String
     },
     { timestamps: true }
-  );
+);
 
+let trails;
 
 async function init() {
     // TODO: Move validation MongoURI set to config handler
@@ -43,11 +45,11 @@ async function init() {
 
 }
 
-function getUsers(){
+function getUsers() {
     return users;
 }
 
-function getTrails(){
+function getTrails() {
     return trails;
 }
 
