@@ -3,6 +3,7 @@ const Router = require("express").Router;
 const urlencoded = require("express").urlencoded;
 const jsonencoded = require("express").json;
 const cors = require("cors");
+const {isAuthorized} = require('./auth.js');
 const corsOpts = {
   origin: process.env.CORSAllowedDomains.split(","),
 };
@@ -15,21 +16,64 @@ router.get("/trails", (req, res) => {
   res.send("1989 - (Taylor's Version)");
 });
 
-router.get("/trails/:id", (req, res) => {
-  res.send(req.body);
+router.post("/getTrail", async(req, res) => {
+  console.log("Trails hit")
+  const result = await mongo.getTrails().find({ placesID:req.body.placesID});
+  const data = result.reduce((review, current) => {
+    const total = review.reviews + 1;
+    review.dogsAllowed += (current.dogsAllowed ? 1 : 0);
+    review.catsAllowed += (current.catsAllowed ? 1 : 0);
+    review.rating += current.rating;
+    review.accessibility += current.accessibility;
+    review.difficulty += current.difficulty;
+    review.length += current.length;
+    review.restrooms += current.restrooms;
+    review.waterFountains += current.waterFountains;
+    review.reviews = total;
+    return review;
+  },{
+    dogsAllowed: 0,
+    catsAllowed: 0,
+    rating: 0,
+    accessibility: 0,
+    difficulty: 0,
+    length: 0,
+    restrooms: 0,
+    waterFountains: 0,
+    lastUpdated: 0,
+    placesID: String(req.body.placesID),
+    reviews: 0
+  });
+  
+  if( result ){
+    const processed = {
+      dogsAllowed : ((data.dogsAllowed / data.reviews ) >= 0.5) ? true : false,
+    catsAllowed : ((data.catsAllowed / data.reviews ) >= 0.5) ? true : false,
+    accessibility : parseFloat((data.accessibility / data.reviews ).toFixed(2)),
+    difficulty : parseFloat((data.difficulty / data.reviews ).toFixed(2)),
+    length : parseFloat((data.length / data.reviews ).toFixed(2)),
+    restrooms : parseFloat((data.restrooms / data.reviews ).toFixed(2)),
+    waterFountains : parseFloat((data.waterFountains / data.reviews ).toFixed(2)),
+    rating : parseFloat((data.rating / data.reviews ).toFixed(2)),
+    reviews : data.reviews,
+    }
+    return res.status(200).json(processed);
+  }
+  return res.status(200).send(data)
 });
 
 //create new details about a trail
-router.post("/trails", async (req, res) => {
+router.post("/trails", isAuthorized, async (req, res) => {
   try {
     const newTrail = await mongo.getTrails().create({
       dogsAllowed: Boolean(req.body.dogsAllowed),
-      hikedThisTrail: Boolean(req.body.hikedThisTrail),
+      catsAllowed: Boolean(req.body.catsAllowed),
       rating: Number(req.body.rating),
+      accessibility: Number(req.body.accessibility),
       difficulty: String(req.body.difficulty),
       length: Number(req.body.length),
-      restroomsAvailable: Boolean(req.body.restroomsAvailable),
-      waterFountain: Boolean(req.body.waterFountain),
+      restrooms: Number(req.body.restrooms),
+      waterFountains: Number(req.body.waterFountains),
       lastUpdated: new Date(req.body.lastUpdated),
       placesID: String(req.body.placesID),
     });
@@ -51,7 +95,7 @@ router.put("/trails/:id", async (req, res) => {
   }
 });
 
-//delete infomation by username
+//TODO: delete infomation by username
 router.delete("/trails:username", async (req, res) => {});
 
 // create new dog profile

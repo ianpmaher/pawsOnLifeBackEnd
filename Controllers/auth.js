@@ -21,6 +21,11 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+function decode(token){
+    const decode = jwt.verify(token, process.env.JWT_KEY);
+    return decode || null;
+}
+
 async function init(){
     if (!process.env.JWT_KEY) {
             throw new Error("You must provide a JWT key in your environment configuration in order to use this application.\
@@ -107,7 +112,6 @@ router.post("/register", async (req, res) => {
     if(!(username && email && password)) {
         return res.status(400).send("Missing all required input fields.");
     }
-    console.log(mongo.getUsers());
      let find = (await mongo.getUsers().findOne({ email: email.toLowerCase() }, { _id: 0 }));
      if(find){ 
         console.log("User exists in database");

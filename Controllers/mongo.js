@@ -15,19 +15,32 @@ let users;
 const trailSchema = new mongoose.Schema(
     {
         dogsAllowed: Boolean,
-        hikedThisTrail: Boolean,
+        catsAllowed: Boolean,
         rating: Number,
+        accessibility: Number,
         difficulty: String, // dropdown option limit it to easy, moderate, hard
         length: Number,
-        restroomsAvailable: Boolean,
-        waterFountain: Boolean,
+        restrooms: Number,
+        waterFountains: Number,
         lastUpdated: Date,
-        placesID: String
+        placesID: String,
+        userID: String
     },
     { timestamps: true }
 );
 
 let trails;
+
+const petSchema = new mongoose.Schema({
+    name: String,
+    type: String,
+    breed: String,
+    age: Number,
+    weight: Number,
+    owner: String
+});
+
+let pets;
 
 async function init() {
     // TODO: Move validation MongoURI set to config handler
@@ -40,7 +53,8 @@ async function init() {
             console.log('The connection with mongod is established')
             users = mongoose.model(process.env.AuthDB || 'auth', userSchema);
             trails = mongoose.model(process.env.TrailsDB || 'trails', trailSchema);
-            console.log(users, trails);
+            pets = mongoose.model(process.env.PetsDB || 'pets', petSchema);
+            console.log(users, trails, pets);
         })
 
 }
@@ -51,6 +65,10 @@ function getUsers() {
 
 function getTrails() {
     return trails;
+}
+
+function getPets() {
+    return pets;
 }
 
 // Error / success
@@ -77,6 +95,7 @@ module.exports = {
     init,
     getUsers,
     getTrails,
+    getPets,
     dropCollection,
     insertMany
 }
