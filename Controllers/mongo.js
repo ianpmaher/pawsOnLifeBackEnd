@@ -24,7 +24,8 @@ const trailSchema = new mongoose.Schema(
         waterFountains: Number,
         lastUpdated: Date,
         placesID: String,
-        userID: String
+        userID: String,
+        image: String
     },
     { timestamps: true }
 );

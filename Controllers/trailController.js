@@ -42,7 +42,8 @@ router.post("/getTrail", async(req, res) => {
     waterFountains: 0,
     lastUpdated: 0,
     placesID: String(req.body.placesID),
-    reviews: 0
+    reviews: 0,
+    image: req.body.image
   });
   
   if( result ){
@@ -56,6 +57,7 @@ router.post("/getTrail", async(req, res) => {
     waterFountains : parseFloat((data.waterFountains / data.reviews ).toFixed(2)),
     rating : parseFloat((data.rating / data.reviews ).toFixed(2)),
     reviews : data.reviews,
+    image: data.image
     }
     return res.status(200).json(processed);
   }
@@ -76,6 +78,7 @@ router.post("/trails", isAuthorized, async (req, res) => {
       waterFountains: Number(req.body.waterFountains),
       lastUpdated: new Date(req.body.lastUpdated),
       placesID: String(req.body.placesID),
+      image:String(req.body.image)
     });
     res.json(newTrail);
   } catch (error) {
@@ -93,6 +96,12 @@ router.put("/trails/:id", async (req, res) => {
   } catch (error) {
     res.status(400).json(error);
   }
+});
+
+router.post("/random", async(req, res) => {
+  console.log("Random hit")
+  const result = await mongo.getTrails().aggregate({ $sample:{size:5}});
+  return res.status(200).send(result)
 });
 
 //TODO: delete infomation by username
