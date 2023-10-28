@@ -35,10 +35,11 @@ On our frontend we utilize React and React DOM for our user interface to ensure 
 * Dog API to help populate breed of work for dog profiles.
 * Create a Reviews section where users can leave comments about the trail and post pictures of the hike.
 * #tags – allow users to tag keywords on trails they have hike to be displaying with the trail info.
+* use snackbars
 
 ## Helpful Links ##
 
-Live Site        | www.pawson.life:4012
+Live Site        | www.pawson.life
 -------------    | -------------
 GitHub backend   |  https://github.com/ianpmaher/pawsOnLifeBackEnd
 GitHub frontend  |  https://github.com/ianpmaher/pawsOnLifeFrontEnd
